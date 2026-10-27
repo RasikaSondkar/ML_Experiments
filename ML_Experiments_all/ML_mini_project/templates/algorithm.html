@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}{{ algo.name }} - Integrated ML Dashboard{% endblock %}
+
+{% block content %}
+<div class="top-header">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge-academic">{{ algo.category }}</span>
+            <span class="text-muted" style="font-size: 12px;">&bull; {{ algo.lab_experiment }}</span>
+        </div>
+        <h1>{{ algo.name }}</h1>
+        <p>{{ algo.summary }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary-academic">&larr; Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- Theoretical Concept Card -->
+<div class="card-academic" style="background-color: #fafbfc;">
+    <div class="d-flex align-items-start gap-3">
+        <div style="font-size: 20px; color: var(--accent-blue); line-height: 1;">&#9432;</div>
+        <div>
+            <div class="fw-bold mb-1" style="font-size: 13px; color: var(--text-main);">Mathematical &amp; Algorithmic Formulation</div>
+            <div class="text-muted" style="font-size: 12px; line-height: 1.5;">
+                {{ algo.theory }}
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">
+                <strong>Loaded Model:</strong> <code>{{ algo.model_file }}</code> &bull; 
+                <strong>Dataset:</strong> <code>{{ algo.dataset_file }}</code> ({{ eval_data.total_samples }} records)
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert-academic alert-academic-danger">
+    <strong>Input Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Left Column: Interactive Form & Prediction Output -->
+    <div class="col-lg-6">
+        <div class="card-academic">
+            <div class="card-academic-header">
+                <h3 class="card-academic-title">Model Inference &amp; Prediction</h3>
+                <button type="button" id="btn-fill-sample" class="btn btn-sm btn-secondary-academic" data-sample='{{ sample_json }}'>
+                    Load Sample Values
+                </button>
+            </div>
+
+            <form action="{{ url_for('predict', algo_id=algo.id) }}" method="POST">
+                <div class="row g-3">
+                    {% for feat in algo.features %}
+                        {% if feat.type == 'textarea' %}
+                            <div class="col-12">
+                                <label for="field-{{ feat.name }}" class="form-label">
+                                    {{ feat.label }}
+                                    <span class="form-desc">{{ feat.description }}</span>
+                                </label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="field-{{ feat.name }}" 
+                                    name="{{ feat.name }}" 
+                                    rows="{{ feat.rows or 3 }}" 
+                                    placeholder="{{ feat.placeholder }}" 
+                                    required>{% if submitted_inputs and feat.name in submitted_inputs %}{{ submitted_inputs[feat.name] }}{% else %}{{ feat.default }}{% endif %}</textarea>
+                            </div>
+                        {% elif feat.type == 'select' %}
+                            <div class="col-md-6">
+                                <label for="field-{{ feat.name }}" class="form-label">
+                                    {{ feat.label }}
+                                    <span class="form-desc">{{ feat.description }}</span>
+                                </label>
+                                <select class="form-select" id="field-{{ feat.name }}" name="{{ feat.name }}" required>
+                                    {% for opt in feat.options %}
+                                        <option value="{{ opt.value }}" 
+                                            {% if submitted_inputs and feat.name in submitted_inputs and submitted_inputs[feat.name]|string == opt.value|string %}
+                                                selected
+                                            {% elif not submitted_inputs and feat.default == opt.value %}
+                                                selected
+                                            {% endif %}>
+                                            {{ opt.label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% else %}
+                            <div class="col-md-6">
+                                <label for="field-{{ feat.name }}" class="form-label">
+                                    {{ feat.label }}
+                                    <span class="form-desc">{{ feat.description }}</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    class="form-control" 
+                                    id="field-{{ feat.name }}" 
+                                    name="{{ feat.name }}" 
+                                    step="{{ feat.step or 'any' }}" 
+                                    {% if feat.min is defined %}min="{{ feat.min }}"{% endif %} 
+                                    {% if feat.max is defined %}max="{{ feat.max }}"{% endif %} 
+                                    placeholder="{{ feat.placeholder }}" 
+                                    value="{% if submitted_inputs and feat.name in submitted_inputs %}{{ submitted_inputs[feat.name] }}{% else %}{{ feat.default }}{% endif %}" 
+                                    required>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <span class="text-muted" style="font-size: 11px;">Input parameters are evaluated in real-time.</span>
+                    <button type="submit" class="btn btn-academic">
+                        Run Algorithm &rarr;
+                    </button>
+                </div>
+            </form>
+
+            <!-- Prediction Result Box -->
+            {% if prediction %}
+            <div id="prediction-result-container" class="result-box {% if prediction.is_positive is defined %}{% if prediction.is_positive %}result-positive{% else %}result-negative{% endif %}{% endif %}">
+                <div class="result-title">{{ algo.target_label }}</div>
+                <div class="result-value">{{ prediction.result_text }}</div>
+                <p class="result-explanation">{{ prediction.explanation }}</p>
+
+                {% if prediction.confidence %}
+                <div class="mt-2 text-muted" style="font-size: 12px;">
+                    <strong>Decision Confidence:</strong> {{ prediction.confidence }}
+                </div>
+                {% endif %}
+
+                {% if prediction.probabilities %}
+                <div class="mt-3 pt-2 border-top">
+                    <div class="fw-bold text-muted mb-1" style="font-size: 11px; text-transform: uppercase;">Class Probabilities Breakdown:</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for class_name, prob_val in prediction.probabilities.items() %}
+                        <span class="badge bg-white text-dark border py-1 px-2" style="font-size: 11px;">
+                            {{ class_name }}: <strong>{{ prob_val }}</strong>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Evaluation Metrics Card -->
+        <div class="card-academic">
+            <div class="card-academic-header">
+                <div>
+                    <h3 class="card-academic-title">Actual Model Performance Metrics</h3>
+                    <div class="text-muted" style="font-size: 11px;">Evaluated directly on dataset: <code>{{ algo.dataset_file }}</code></div>
+                </div>
+                <span class="badge-academic">{{ eval_data.total_samples }} Samples</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Evaluation Metric</th>
+                            <th>Computed Value</th>
+                            <th>Statistical Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in eval_data.metrics %}
+                        <tr>
+                            <td class="fw-semibold">{{ m.name }}</td>
+                            <td>
+                                <span class="metric-value-badge">{{ m.value }}</span>
+                            </td>
+                            <td class="text-muted">{{ m.desc }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2 text-muted text-end" style="font-size: 11px;">
+                <em>&bull; Metrics are evaluated from genuine scikit-learn model outputs on the complete experiment dataset.</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Visualization & Dataset Inspection -->
+    <div class="col-lg-6">
+        <!-- Visualization Card -->
+        <div class="card-academic">
+            <div class="card-academic-header">
+                <h3 class="card-academic-title">Algorithm Visualization</h3>
+                <span class="badge-academic">Matplotlib / Seaborn</span>
+            </div>
+            <div class="text-center p-2 bg-white rounded border">
+                <img src="{{ chart_base64 }}" alt="{{ algo.name }} Visualization" class="img-fluid" style="max-height: 380px; object-fit: contain;">
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px; line-height: 1.4;">
+                {% if algo.target_type == 'continuous' %}
+                    Visualization reflects the fitted regression line and data points. Red indicators highlight current input coordinates.
+                {% else %}
+                    Visualized evaluation shows the model classification decision landscape or confusion matrix computed on training observations.
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dataset Preview Card -->
+        <div class="card-academic">
+            <div class="card-academic-header">
+                <div>
+                    <h3 class="card-academic-title">Dataset Preview</h3>
+                    <div class="text-muted" style="font-size: 11px;">{{ algo.dataset_name }}</div>
+                </div>
+                <span class="badge-academic">Top 5 Records</span>
+            </div>
+
+            <div class="table-responsive" style="max-height: 250px;">
+                <table class="data-preview-table">
+                    <thead>
+                        <tr>
+                            {% for col in dataset_preview.columns %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in dataset_preview.rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2 d-flex justify-content-between text-muted" style="font-size: 11px;">
+                <span>Total records in dataset: <strong>{{ dataset_preview.total_rows }}</strong></span>
+                <span>Features: <strong>{{ dataset_preview.total_cols }}</strong></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

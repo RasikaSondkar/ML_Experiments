@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}About Project - Integrated Machine Learning Algorithm Dashboard{% endblock %}
+
+{% block content %}
+<div class="top-header">
+    <div>
+        <h1>About the Project</h1>
+        <p>College Mini Project: Integrated Machine Learning Algorithm Dashboard &bull; Technical Overview &amp; Laboratory Reference</p>
+    </div>
+    <div>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary-academic">&larr; Return to Dashboard</a>
+    </div>
+</div>
+
+<!-- Project Overview -->
+<div class="card-academic">
+    <div class="card-academic-header">
+        <h3 class="card-academic-title">Project Background &amp; Motivation</h3>
+        <span class="badge-academic">Academic Context</span>
+    </div>
+    <p class="text-muted" style="font-size: 13px; line-height: 1.6;">
+        During regular Machine Learning laboratory coursework, students typically build and evaluate models in isolated Jupyter notebooks or individual standalone scripts. While each algorithm functions independently, evaluating multiple models requires switching between numerous environments, script files, and command-line scripts.
+    </p>
+    <p class="text-muted" style="font-size: 13px; line-height: 1.6;">
+        The <strong>Integrated Machine Learning Algorithm Dashboard</strong> brings together all 10 laboratory experiments into a single, cohesive, web-based dashboard. It enables students, peers, and laboratory examiners to run live predictions on new inputs, inspect underlying dataset characteristics, review verified performance metrics, and visualize decision spaces in real time.
+    </p>
+</div>
+
+<!-- Key System Pillars -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card-academic h-100">
+            <h6 class="fw-bold text-primary mb-2" style="font-size: 14px;">1. Model Reusability</h6>
+            <p class="text-muted" style="font-size: 12px; line-height: 1.5; margin: 0;">
+                All models originate from actual laboratory experiments and are loaded from pre-trained serialization bundles (<code>.pkl</code> and <code>.joblib</code>). No models are artificially recreated or retrained unnecessarily.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-academic h-100">
+            <h6 class="fw-bold text-success mb-2" style="font-size: 14px;">2. Authentic Metrics</h6>
+            <p class="text-muted" style="font-size: 12px; line-height: 1.5; margin: 0;">
+                Performance metrics—including R&sup2;, MAE, RMSE, Accuracy, Precision, Recall, and F1-score—are computed directly against the complete original datasets using Scikit-learn evaluation utilities.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-academic h-100">
+            <h6 class="fw-bold text-info mb-2" style="font-size: 14px;">3. Reproducibility &amp; UI</h6>
+            <p class="text-muted" style="font-size: 12px; line-height: 1.5; margin: 0;">
+                The user interface uses a minimal academic design with Bootstrap 5 and custom CSS. A 1-click sample value loader allows instant testing of complex multi-feature models during viva demonstrations.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Algorithm Laboratory Mapping Table -->
+<div class="card-academic mt-3">
+    <div class="card-academic-header">
+        <h3 class="card-academic-title">Comprehensive Algorithm &amp; Experiment Mapping</h3>
+        <span class="badge-academic">10 Integrated Experiments</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th style="width: 4%;">#</th>
+                    <th style="width: 20%;">Algorithm</th>
+                    <th style="width: 14%;">Lab Source</th>
+                    <th style="width: 18%;">Dataset &amp; Samples</th>
+                    <th style="width: 22%;">Input Dimensions</th>
+                    <th style="width: 22%;">Evaluation Focus</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1</strong></td>
+                    <td><strong>Simple Linear Regression</strong></td>
+                    <td><code>ML2_SLR</code></td>
+                    <td><code>Placement.csv</code> (200 rows)</td>
+                    <td>1 feature: <code>cgpa</code></td>
+                    <td>R&sup2; (~0.7752), MAE, RMSE</td>
+                </tr>
+                <tr>
+                    <td><strong>2</strong></td>
+                    <td><strong>Multiple Linear Regression</strong></td>
+                    <td><code>ML3_MLR</code></td>
+                    <td><code>Cgpa_iq_package.csv</code> (200 rows)</td>
+                    <td>2 features: <code>cgpa</code>, <code>iq</code></td>
+                    <td>R&sup2; (~0.8673), MAE, Residual plot</td>
+                </tr>
+                <tr>
+                    <td><strong>3</strong></td>
+                    <td><strong>Binary Logistic Regression</strong></td>
+                    <td><code>ML4_BC</code></td>
+                    <td><code>Placement_Y_N.csv</code> (100 rows)</td>
+                    <td>2 features: <code>cgpa</code>, <code>iq</code></td>
+                    <td>Accuracy (91.0%), Precision, F1-score</td>
+                </tr>
+                <tr>
+                    <td><strong>4</strong></td>
+                    <td><strong>Multiclass Logistic Regression</strong></td>
+                    <td><code>ML5_MC</code></td>
+                    <td><code>iris.csv</code> (150 rows)</td>
+                    <td>4 morphological features</td>
+                    <td>Accuracy (98.0%), 3&times;3 Confusion Matrix</td>
+                </tr>
+                <tr>
+                    <td><strong>5</strong></td>
+                    <td><strong>Decision Tree Classifier</strong></td>
+                    <td><code>ML6_DT</code></td>
+                    <td><code>heart_disease_dataset.csv</code> (303 rows)</td>
+                    <td>13 clinical parameters</td>
+                    <td>Accuracy (85.15%), Gini Importance</td>
+                </tr>
+                <tr>
+                    <td><strong>6</strong></td>
+                    <td><strong>K-Nearest Neighbors (KNN)</strong></td>
+                    <td><code>ML7_KNN</code></td>
+                    <td><code>diabetes_dataset.csv</code> (768 rows)</td>
+                    <td>8 diagnostic features (Pima Indians)</td>
+                    <td>Accuracy (~72.66%), Distance metric</td>
+                </tr>
+                <tr>
+                    <td><strong>7</strong></td>
+                    <td><strong>Naive Bayes Classifier</strong></td>
+                    <td><code>ML8_NB</code></td>
+                    <td><code>college_messages.csv</code> (229 rows)</td>
+                    <td>Text Bag-of-Words (CountVectorizer)</td>
+                    <td>Text Accuracy (~99%), Bayes Probability</td>
+                </tr>
+                <tr>
+                    <td><strong>8</strong></td>
+                    <td><strong>Linear SVM</strong></td>
+                    <td><code>ML9_LSVM</code></td>
+                    <td><code>data_banknote_authentication.csv</code> (1,372 rows)</td>
+                    <td>4 continuous wavelet features</td>
+                    <td>Accuracy (98.40%), Separating Hyperplane</td>
+                </tr>
+                <tr>
+                    <td><strong>9</strong></td>
+                    <td><strong>Non-linear SVM (RBF Kernel)</strong></td>
+                    <td><code>ML10_NSVM</code></td>
+                    <td><code>iris.csv</code> (150 rows)</td>
+                    <td>4 botanical measurements</td>
+                    <td>Accuracy (97.33%), RBF Kernel margin</td>
+                </tr>
+                <tr>
+                    <td><strong>10</strong></td>
+                    <td><strong>Random Forest Classifier</strong></td>
+                    <td><code>ML11_RFA</code></td>
+                    <td><code>diabetes.csv</code> (768 rows)</td>
+                    <td>8 clinical metrics + Imputation</td>
+                    <td>Accuracy (94.79%), Ensemble Importances</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Technology Stack Details -->
+<div class="card-academic mt-3">
+    <div class="card-academic-header">
+        <h3 class="card-academic-title">Technology Stack &amp; Architecture</h3>
+        <span class="badge-academic">Specifications</span>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light">
+                <div class="fw-bold text-dark mb-1">Web Backend</div>
+                <div class="text-muted small">Python 3 &bull; Flask micro-framework</div>
+                <div class="text-secondary small mt-1">Lightweight routing, template rendering, and error validation.</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light">
+                <div class="fw-bold text-dark mb-1">Machine Learning</div>
+                <div class="text-muted small">Scikit-learn &bull; Joblib &bull; Pickle</div>
+                <div class="text-secondary small mt-1">Model pipelines, standard scalers, vectorizers, and metrics.</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light">
+                <div class="fw-bold text-dark mb-1">Data Processing</div>
+                <div class="text-muted small">Pandas &bull; NumPy</div>
+                <div class="text-secondary small mt-1">Tabular dataset loading, missing-value imputation, vectorization.</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light">
+                <div class="fw-bold text-dark mb-1">Visualization &amp; UI</div>
+                <div class="text-muted small">Matplotlib &bull; Seaborn &bull; Bootstrap 5</div>
+                <div class="text-secondary small mt-1">Base64 chart generation and responsive academic typography.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

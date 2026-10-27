@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Integrated Machine Learning Algorithm Dashboard - Home{% endblock %}
+
+{% block content %}
+<div class="top-header">
+    <div>
+        <h1>Integrated Machine Learning Algorithm Dashboard</h1>
+        <p>A unified web application consolidating 10 Machine Learning laboratory experiments with existing trained models, datasets, and live visualizations.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('about') }}" class="btn btn-secondary-academic">Project Documentation</a>
+    </div>
+</div>
+
+<!-- Project Overview Card -->
+<div class="card-academic">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h5 class="fw-bold mb-1" style="font-size: 15px; color: var(--accent-blue);">College Practical Project Overview</h5>
+            <p class="text-muted mb-0" style="font-size: 13px;">
+                This dashboard combines practical implementations of foundational regression, classification, non-linear kernel, and ensemble learning algorithms into one responsive, instructor-evaluable platform. Rather than simulating predictions, the system connects directly to pre-trained Scikit-learn pipelines and evaluates genuine experimental datasets.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="d-inline-flex gap-2">
+                <div class="text-center px-3 py-2 border rounded bg-light">
+                    <div class="fw-bold text-primary" style="font-size: 18px;">10</div>
+                    <div class="text-muted" style="font-size: 11px;">Algorithms</div>
+                </div>
+                <div class="text-center px-3 py-2 border rounded bg-light">
+                    <div class="fw-bold text-success" style="font-size: 18px;">9</div>
+                    <div class="text-muted" style="font-size: 11px;">Datasets</div>
+                </div>
+                <div class="text-center px-3 py-2 border rounded bg-light">
+                    <div class="fw-bold text-info" style="font-size: 18px;">100%</div>
+                    <div class="text-muted" style="font-size: 11px;">Trained Models</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Algorithm Cards Grid -->
+<div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+    <h6 class="fw-bold text-uppercase text-muted mb-0" style="font-size: 12px; letter-spacing: 0.5px;">
+        Integrated Algorithms Directory
+    </h6>
+    <span class="text-muted" style="font-size: 12px;">Select an algorithm to run predictions and view metrics</span>
+</div>
+
+<div class="algo-grid">
+    {% for algo in algorithms %}
+    <a href="{{ url_for('algorithm_view', algo_id=algo.id) }}" class="algo-card">
+        <div>
+            <div class="algo-card-category">{{ algo.category }}</div>
+            <div class="algo-card-title">{{ loop.index }}. {{ algo.name }}</div>
+            <div class="algo-card-desc">{{ algo.summary }}</div>
+        </div>
+        <div>
+            <div class="mb-2">
+                <span class="badge-academic">{{ algo.lab_experiment.split(':')[0] }}</span>
+            </div>
+            <div class="algo-card-meta">
+                <span>Dataset: {{ algo.dataset_file }}</span>
+                <span class="fw-bold text-primary">Run &rarr;</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Quick Reference Summary Table -->
+<div class="card-academic mt-4">
+    <div class="card-academic-header">
+        <h3 class="card-academic-title">Laboratory Algorithms Quick Reference</h3>
+        <span class="badge-academic">Evaluation Summary</span>
+    </div>
+    <div class="table-responsive">
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 25%;">Algorithm</th>
+                    <th style="width: 18%;">Category</th>
+                    <th style="width: 27%;">Trained Model &amp; Dataset</th>
+                    <th style="width: 15%;">Key Benchmark</th>
+                    <th style="width: 10%; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for algo in algorithms %}
+                <tr>
+                    <td class="text-muted fw-bold">{{ loop.index }}</td>
+                    <td>
+                        <a href="{{ url_for('algorithm_view', algo_id=algo.id) }}" class="fw-bold text-decoration-none text-dark">
+                            {{ algo.name }}
+                        </a>
+                    </td>
+                    <td><span class="badge-academic">{{ algo.category }}</span></td>
+                    <td>
+                        <div class="small fw-semibold text-secondary">{{ algo.model_file }}</div>
+                        <div class="text-muted" style="font-size: 11px;">{{ algo.dataset_name }}</div>
+                    </td>
+                    <td>
+                        {% if algo.target_type == 'continuous' %}
+                            <span class="metric-value-badge">R&sup2; &gt; 0.77</span>
+                        {% else %}
+                            <span class="metric-value-badge">Accuracy &gt; 85%</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{{ url_for('algorithm_view', algo_id=algo.id) }}" class="btn btn-sm btn-secondary-academic py-1 px-2" style="font-size: 11px;">
+                            Inspect
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
